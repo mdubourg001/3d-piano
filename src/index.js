@@ -124,6 +124,9 @@ const handlePressedKeyboardEvent = k => {
   }
 
   key.note.play();
+
+  // updating canvas bg color based on played note
+  document.querySelector('canvas').style.backgroundColor = key.note.color;
 };
 
 const handleRepetitiveKeyboardEvents = () => {};
