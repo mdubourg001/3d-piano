@@ -1,5 +1,3 @@
-import * as THREE from "three";
-
 // === SCENE ELEMENTS
 
 let camera, scene, renderer;
@@ -13,7 +11,7 @@ const init = () => {
     70,
     window.innerWidth / window.innerHeight,
     0.01,
-    10
+    10,
   );
   camera.position.set(0, 0, 1);
 
@@ -23,7 +21,7 @@ const init = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // updating renderer size upon window.resize
-  window.addEventListener("resize", () => {
+  window.addEventListener('resize', () => {
     if (resizeTimeout !== null) clearTimeout(resizeTimeout);
 
     resizeTimeout = setTimeout(() => {
@@ -31,15 +29,15 @@ const init = () => {
     }, 100);
   });
 
-  window.addEventListener("keydown", event => {
+  window.addEventListener('keydown', event => {
     keyboardEvents[event.key] = true;
   });
 
-  window.addEventListener("keyup", event => {
+  window.addEventListener('keyup', event => {
     keyboardEvents[event.key] = false;
   });
 
-  window.addEventListener("resize", updateViewportSize);
+  window.addEventListener('resize', updateViewportSize);
   updateViewportSize();
 
   document.body.appendChild(renderer.domElement);
@@ -47,9 +45,9 @@ const init = () => {
 
 const updateViewportSize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix()
+  camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-}
+};
 
 const handleKeyboardEvents = () => {};
 
@@ -65,3 +63,5 @@ init();
 renderer.render(scene, camera);
 
 gameLoop();
+
+setTimeout(() => NOTES[4].play(), 2000);
