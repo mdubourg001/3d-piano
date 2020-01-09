@@ -1,0 +1,15 @@
+{
+  "name": "3d-piano",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "three": "^0.112.1"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4"
+  }
+}
