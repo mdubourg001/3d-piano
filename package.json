@@ -10,6 +10,7 @@
     "three": "^0.112.1"
   },
   "devDependencies": {
-    "parcel": "^1.12.4"
+    "parcel": "^1.12.4",
+    "prettier": "^1.19.1"
   }
 }
