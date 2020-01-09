@@ -1,6 +1,7 @@
 // === CONSTANTS
 
 const KEYBOARD_NOTES_MAPPING = {
+  // first octave
   q: { note: NOTES[0] },
   w: { note: NOTES[1] },
   e: { note: NOTES[2] },
@@ -13,18 +14,21 @@ const KEYBOARD_NOTES_MAPPING = {
   p: { note: NOTES[9] },
   a: { note: NOTES[10] },
   s: { note: NOTES[11] },
-  // d: { note: NOTES[12]},
-  // f: { note: NOTES[13]},
-  // g: { note: NOTES[14]},
-  // h: { note: NOTES[15]},
-  // j: { note: NOTES[16]},
-  // k: { note: NOTES[17]},
-  // l: { note: NOTES[18]},
-  // z: { note: NOTES[19]},
-  // x: { note: NOTES[20]},
-  // c: { note: NOTES[21]},
-  // v: { note: NOTES[22]},
-  // b: { note: NOTES[23]},
+  // second octave
+  d: { note: NOTES[12] },
+  f: { note: NOTES[13] },
+  g: { note: NOTES[14] },
+  h: { note: NOTES[15] },
+  j: { note: NOTES[16] },
+  k: { note: NOTES[17] },
+  l: { note: NOTES[18] },
+  z: { note: NOTES[19] },
+  x: { note: NOTES[20] },
+  c: { note: NOTES[21] },
+  v: { note: NOTES[22] },
+  b: { note: NOTES[23] },
+  // third octave
+  n: { note: NOTES[24] },
 };
 
 // === SCENE ELEMENTS
@@ -109,7 +113,7 @@ const updateViewportSize = () => {
 };
 
 const handlePressedKeyboardEvent = k => {
-  if (keyboardEvents[k]) return;
+  if (keyboardEvents[k] || !KEYBOARD_NOTES_MAPPING[k]) return;
 
   keyboardEvents[event.key] = true;
   const key = KEYBOARD_NOTES_MAPPING[k];
