@@ -39,8 +39,17 @@ const init = () => {
     keyboardEvents[event.key] = false;
   });
 
+  window.addEventListener("resize", updateViewportSize);
+  updateViewportSize();
+
   document.body.appendChild(renderer.domElement);
 };
+
+const updateViewportSize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
 
 const handleKeyboardEvents = () => {};
 
