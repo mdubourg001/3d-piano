@@ -1,18 +1,18 @@
 // === CONSTANTS
 
 const KEYBOARD_NOTES_MAPPING = {
-  q: { note: NOTES[0]},
-  w: { note: NOTES[1]},
-  e: { note: NOTES[2]},
-  r: { note: NOTES[3]},
-  t: { note: NOTES[4]},
-  y: { note: NOTES[5]},
-  u: { note: NOTES[6]},
-  i: { note: NOTES[7]},
-  o: { note: NOTES[8]},
-  p: { note: NOTES[9]},
-  a: { note: NOTES[10]},
-  s: { note: NOTES[11]},
+  q: { note: NOTES[0] },
+  w: { note: NOTES[1] },
+  e: { note: NOTES[2] },
+  r: { note: NOTES[3] },
+  t: { note: NOTES[4] },
+  y: { note: NOTES[5] },
+  u: { note: NOTES[6] },
+  i: { note: NOTES[7] },
+  o: { note: NOTES[8] },
+  p: { note: NOTES[9] },
+  a: { note: NOTES[10] },
+  s: { note: NOTES[11] },
   // d: { note: NOTES[12]},
   // f: { note: NOTES[13]},
   // g: { note: NOTES[14]},
@@ -62,8 +62,7 @@ const init = () => {
   window.addEventListener(
     'keydown',
     event => {
-      keyboardEvents[event.key] = true;
-      handlePressedKeyboardEvents();
+      handlePressedKeyboardEvent(event.key);
     },
     false,
   );
@@ -81,14 +80,17 @@ const init = () => {
 
   document.body.appendChild(renderer.domElement);
 
-//  create notes group
+  //  create notes group
   let group = new THREE.Group();
-  let geometry = new THREE.BoxGeometry( 0.1, 0.6, 0.1 );
-  let material = new THREE.MeshBasicMaterial( {color: 0xffe4c4, vertexColors: THREE.FaceColors } );
+  let geometry = new THREE.BoxGeometry(0.1, 0.6, 0.1);
+  let material = new THREE.MeshBasicMaterial({
+    color: 0xffe4c4,
+    vertexColors: THREE.FaceColors,
+  });
   let position = -1.5;
 
-  for(let i =0; i < 11; i++) {
-    let note = new THREE.Mesh( geometry, material );
+  for (let i = 0; i < 11; i++) {
+    let note = new THREE.Mesh(geometry, material);
     note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
     note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
     note.position.set(position, 0.6, 0.1);
@@ -96,9 +98,8 @@ const init = () => {
     position += 0.12;
   }
 
-  group.rotation.set(-0.7, 0, 0)
-  scene.add(group)
-
+  group.rotation.set(-0.7, 0, 0);
+  scene.add(group);
 };
 
 const updateViewportSize = () => {
@@ -107,20 +108,18 @@ const updateViewportSize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
-const handlePressedKeyboardEvents = () => {
-  for (let k of Object.keys(KEYBOARD_NOTES_MAPPING)) {
-    const key = KEYBOARD_NOTES_MAPPING[k];
+const handlePressedKeyboardEvent = k => {
+  if (keyboardEvents[k]) return;
 
-    if (keyboardEvents[k]) {
-      if (!key.note.paused) {
-        key.note.pause();
-        key.note.fastSeek(0.0);
-      }
+  keyboardEvents[event.key] = true;
+  const key = KEYBOARD_NOTES_MAPPING[k];
 
-      key.note.play();
-      keyboardEvents[k] = false;
-    }
+  if (!key.note.paused) {
+    key.note.pause();
+    key.note.fastSeek(0.0);
   }
+
+  key.note.play();
 };
 
 const handleRepetitiveKeyboardEvents = () => {};
