@@ -1,9 +1,16 @@
+// === CONSTANTS
+
+const KEYBOARD_NOTES_MAPPING = {
+  q: { note: NOTES[0] },
+};
+
 // === SCENE ELEMENTS
 
 let camera, scene, renderer;
 
-let resizeTimeout = null;
+// === BUSINESS
 
+let resizeTimeout = null;
 const keyboardEvents = {};
 
 const init = () => {
@@ -29,13 +36,22 @@ const init = () => {
     }, 100);
   });
 
-  window.addEventListener('keydown', event => {
-    keyboardEvents[event.key] = true;
-  });
+  window.addEventListener(
+    'keydown',
+    event => {
+      keyboardEvents[event.key] = true;
+      handlePressedKeyboardEvents();
+    },
+    false,
+  );
 
-  window.addEventListener('keyup', event => {
-    keyboardEvents[event.key] = false;
-  });
+  window.addEventListener(
+    'keyup',
+    event => {
+      keyboardEvents[event.key] = false;
+    },
+    false,
+  );
 
   window.addEventListener('resize', updateViewportSize);
   updateViewportSize();
@@ -49,12 +65,28 @@ const updateViewportSize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
-const handleKeyboardEvents = () => {};
+const handlePressedKeyboardEvents = () => {
+  for (let k of Object.keys(KEYBOARD_NOTES_MAPPING)) {
+    const key = KEYBOARD_NOTES_MAPPING[k];
+
+    if (keyboardEvents[k]) {
+      if (!key.note.paused) {
+        key.note.pause();
+        key.note.fastSeek(0.0);
+      }
+
+      key.note.play();
+      keyboardEvents[k] = false;
+    }
+  }
+};
+
+const handleRepetitiveKeyboardEvents = () => {};
 
 const gameLoop = () => {
   requestAnimationFrame(gameLoop);
 
-  handleKeyboardEvents();
+  handleRepetitiveKeyboardEvents();
 };
 
 // ========== //
@@ -63,5 +95,3 @@ init();
 renderer.render(scene, camera);
 
 gameLoop();
-
-setTimeout(() => NOTES[4].play(), 2000);
