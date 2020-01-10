@@ -34,9 +34,9 @@ const KEYBOARD_NOTES_MAPPING = {
 // === LITE SIZE
 const PIANO_WIDTH = (window.innerWidth * 8) / 10 / (window.innerWidth / 2);
 const PIANO_HEIGHT = 1;
-const TILE_WIDTH =
-  (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
+const TILE_WIDTH = (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
 const TILE_HEIGHT = 1;
+const BLACK_TILE_HEIGHT = TILE_HEIGHT / 1.7
 
 const DEFAULT_TILE_ROTATION = 0.0;
 const MAX_TILE_ROTATION = 0.1;
@@ -102,8 +102,10 @@ const init = () => {
   let group = new THREE.Group();
   group.position.set(-PIANO_WIDTH / 2, 0, -PIANO_HEIGHT / 2);
   let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
+  let geometryBlackTile = new THREE.BoxGeometry(TILE_WIDTH, BLACK_TILE_HEIGHT, 0.1);
+
   geometry.translate(0, -TILE_HEIGHT / 2, 0);
-  // TODO translate la geometry pour modifier le centre de rotation des touches
+  geometryBlackTile.translate(0, -BLACK_TILE_HEIGHT / 2, 0);
 
   let position = 0;
 
@@ -112,10 +114,10 @@ const init = () => {
       color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
       vertexColors: THREE.FaceColors,
     });
-    let tile = new THREE.Mesh(geometry, material);
+    let tile = new THREE.Mesh(KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometryBlackTile : geometry, material);
     if (KEYBOARD_NOTES_MAPPING[k].note.sharp) {
       noteColors(0x0000ff, tile);
-      tile.position.set(position + TILE_WIDTH / 2, 1, 0.13);
+      tile.position.set(position + TILE_WIDTH / 2, 0.62, 0.13);
     } else {
       position += TILE_WIDTH + 0.01;
       noteColors(0x000000, tile);
