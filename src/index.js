@@ -100,7 +100,6 @@ const init = () => {
       document.querySelector('#hint-wrapper').style.opacity = '0';
 
       handlePressedKeyboardEvent(event.key);
-      console.log(event.key);
 
       refreshNotesText();
     },
@@ -247,37 +246,38 @@ function getClosestTile(position) {
   // update the position
   raycaster.setFromCamera(position, camera);
   // Get list of intersections
-  var selected = raycaster.intersectObjects(group.children);
+  const selected = raycaster.intersectObjects(group.children);
   if (selected.length) {
     return selected[0].object;
   }
 }
 
 function onMouseDown(event) {
-  var position = new THREE.Vector2();
- 
-  var domRect = renderer.domElement.getBoundingClientRect();
+  const position = new THREE.Vector2();
+
+  const domRect = renderer.domElement.getBoundingClientRect();
   position.x = (event.clientX / domRect.width) * 2 - 1 + domRect.left;
-  position.y = - (event.clientY / domRect.height) * 2 + 1 + domRect.top;
+  position.y = -(event.clientY / domRect.height) * 2 + 1 + domRect.top;
 
-  var s = getClosestTile(position);
+  document.querySelector('#hint-wrapper').style.opacity = '0';
+
+  const s = getClosestTile(position);
   if (s) {
+    const index = Object.values(KEYBOARD_NOTES_MAPPING).findIndex(
+      v => v.tile === s,
+    );
 
-    const index = Object.values(KEYBOARD_NOTES_MAPPING).findIndex(v => v.tile === s);
-    
     handlePressedKeyboardEvent(Object.keys(KEYBOARD_NOTES_MAPPING)[index]);
     lastTileClicked = index;
-    
+
     refreshNotesText();
   }
 }
 
 function onMouseUp(event) {
-
   keyboardEvents[Object.keys(KEYBOARD_NOTES_MAPPING)[lastTileClicked]] = false;
 
   if (Object.values(keyboardEvents).some(k => k)) refreshNotesText();
-
 }
 
 const refreshNotesText = () => {
