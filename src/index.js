@@ -36,7 +36,7 @@ const PIANO_WIDTH = (window.innerWidth * 8) / 10 / (window.innerWidth / 2);
 const PIANO_HEIGHT = 1;
 const TILE_WIDTH = (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
 const TILE_HEIGHT = 1;
-const BLACK_TILE_HEIGHT = TILE_HEIGHT / 1.7
+const BLACK_TILE_HEIGHT = TILE_HEIGHT / 1.7;
 
 const DEFAULT_TILE_ROTATION = 0.0;
 const MAX_TILE_ROTATION = 0.1;
@@ -44,7 +44,10 @@ const TILE_ROTATION_STEP = 0.05;
 
 const MAX_SHARP_ROTATION = 0.02;
 const SHARP_ROTATION_STEP = 0.01;
-
+const CAMERA_X = 0.28;
+const TILE_COLOR = 0xffe4c4;
+const SHARP_TILE_COLOR = 0x2a2726;
+const TILE_PADDING = 0.006
 // === SCENE ELEMENTS
 
 let camera, scene, renderer;
@@ -61,7 +64,7 @@ const init = () => {
     0.01,
     10,
   );
-  camera.position.set(0.28, 0, 1);
+  camera.position.set(CAMERA_X, 0, 1);
 
   scene = new THREE.Scene();
 
@@ -102,27 +105,23 @@ const init = () => {
   let group = new THREE.Group();
   group.position.set(-PIANO_WIDTH / 2, 0, -PIANO_HEIGHT / 2);
   let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
-  let geometryBlackTile = new THREE.BoxGeometry(TILE_WIDTH, BLACK_TILE_HEIGHT, 0.1);
+  let geometrySharpTile = new THREE.BoxGeometry(TILE_WIDTH, BLACK_TILE_HEIGHT, 0.1);
 
   geometry.translate(0, -TILE_HEIGHT / 2, 0);
-  geometryBlackTile.translate(0, -BLACK_TILE_HEIGHT / 2, 0);
+  geometrySharpTile.translate(0, -BLACK_TILE_HEIGHT / 2, 0);
 
   let position = 0;
 
   Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
     let material = new THREE.MeshLambertMaterial({
-      color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
+      color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? SHARP_TILE_COLOR : TILE_COLOR,
       vertexColors: THREE.FaceColors,
     });
-    let tile = new THREE.Mesh(KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometryBlackTile : geometry, material);
+    let tile = new THREE.Mesh(KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometrySharpTile : geometry, material);
     if (KEYBOARD_NOTES_MAPPING[k].note.sharp) {
-      noteColors(0x0000ff, tile);
       tile.position.set(position + TILE_WIDTH / 2, 0.62, 0.13);
     } else {
-      position += TILE_WIDTH + 0.01;
-      noteColors(0x000000, tile);
-      tile.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
-      tile.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
+      position += TILE_WIDTH + TILE_PADDING;
       tile.position.set(position, 0.6, 0.1);
     }
     KEYBOARD_NOTES_MAPPING[k].tile = tile;
@@ -133,7 +132,7 @@ const init = () => {
   scene.add(group);
 
   const light = new THREE.PointLight(0xffffff, 1.2, 100);
-  light.position.set(0, 0, 2);
+  light.position.set(CAMERA_X, 0, 2);
   scene.add(light);
 };
 
