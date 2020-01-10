@@ -18,21 +18,42 @@
       }
 
       canvas {
-        background-color: white;
+        background-color: #9066cc;
         background-repeat: no-repeat;
         background-size: cover;
 
         transition: background-color 0.6s linear;
       }
 
+      .label {
+        background-color: rgba(245, 245, 245, 0.7);
+        border-radius: 5px;
+      }
+
+      #hint-wrapper {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        position: fixed;
+        left: 50%;
+        top: 35px;
+        transform: translateX(-50%);
+
+        display: flex;
+        align-items: center;
+      }
+
+      #hint-wrapper h2 {
+        font-family: 'Concert One', cursive;
+        margin: 0;
+        margin-bottom: 5px;
+        padding: 8px 10px;
+      }
+
       #notes-wrapper {
         position: fixed;
         left: 50%;
-        bottom: 15px;
+        bottom: 35px;
         transform: translateX(-50%);
-
-        background-color: rgba(245, 245, 245, 0.7);
-        border-radius: 5px;
 
         display: flex;
         align-items: center;
@@ -54,6 +75,10 @@
     <script src="./src/notes.js"></script>
     <script src="./src/index.js"></script>
 
-    <div id="notes-wrapper"></div>
+    <div id="hint-wrapper" class="label">
+      <h2>Use your keyboard to play some notes !</h2>
+    </div>
+
+    <div id="notes-wrapper" class="label"></div>
   </body>
 </html>

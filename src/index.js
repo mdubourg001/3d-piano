@@ -87,6 +87,8 @@ const init = () => {
   window.addEventListener(
     'keydown',
     event => {
+      document.querySelector('#hint-wrapper').style.opacity = '0';
+
       handlePressedKeyboardEvent(event.key);
 
       refreshNotesText();
@@ -254,5 +256,9 @@ gameLoop();
 // ========== //
 
 window.onload = () => {
+  setTimeout(() => {
+    document.querySelector('#hint-wrapper').style.opacity = '1';
+  }, 1000);
+
   notesWrapper = document.querySelector('#notes-wrapper');
 };
