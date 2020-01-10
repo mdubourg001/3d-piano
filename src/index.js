@@ -108,7 +108,7 @@ const init = () => {
   let position = 0;
 
   Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
-    let material = new THREE.MeshBasicMaterial({
+    let material = new THREE.MeshLambertMaterial({
       color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
       vertexColors: THREE.FaceColors,
     });
@@ -129,6 +129,10 @@ const init = () => {
 
   group.rotation.set(-0.7, 0, 0);
   scene.add(group);
+
+  const light = new THREE.PointLight(0xffffff, 1.2, 100);
+  light.position.set(0, 0, 2);
+  scene.add(light);
 };
 
 const noteColors = (color, note) => {
