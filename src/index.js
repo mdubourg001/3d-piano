@@ -32,9 +32,11 @@ const KEYBOARD_NOTES_MAPPING = {
 };
 
 // === LITE SIZE
+
 const PIANO_WIDTH = (window.innerWidth * 8) / 10 / (window.innerWidth / 2);
 const PIANO_HEIGHT = 1;
-const TILE_WIDTH = (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
+const TILE_WIDTH =
+  (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
 const TILE_HEIGHT = 1;
 const BLACK_TILE_HEIGHT = TILE_HEIGHT / 1.7;
 
@@ -47,10 +49,12 @@ const SHARP_ROTATION_STEP = 0.01;
 const CAMERA_X = 0.28;
 const TILE_COLOR = 0xffe4c4;
 const SHARP_TILE_COLOR = 0x2a2726;
-const TILE_PADDING = 0.006
+const TILE_PADDING = 0.006;
+
 // === SCENE ELEMENTS
 
 let camera, scene, renderer;
+let notesWrapper;
 
 // === BUSINESS
 
@@ -84,6 +88,8 @@ const init = () => {
     'keydown',
     event => {
       handlePressedKeyboardEvent(event.key);
+
+      refreshNotesText();
     },
     false,
   );
@@ -92,6 +98,8 @@ const init = () => {
     'keyup',
     event => {
       keyboardEvents[event.key] = false;
+
+      refreshNotesText();
     },
     false,
   );
@@ -105,7 +113,11 @@ const init = () => {
   let group = new THREE.Group();
   group.position.set(-PIANO_WIDTH / 2, 0, -PIANO_HEIGHT / 2);
   let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
-  let geometrySharpTile = new THREE.BoxGeometry(TILE_WIDTH, BLACK_TILE_HEIGHT, 0.1);
+  let geometrySharpTile = new THREE.BoxGeometry(
+    TILE_WIDTH,
+    BLACK_TILE_HEIGHT,
+    0.1,
+  );
 
   geometry.translate(0, -TILE_HEIGHT / 2, 0);
   geometrySharpTile.translate(0, -BLACK_TILE_HEIGHT / 2, 0);
@@ -114,10 +126,15 @@ const init = () => {
 
   Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
     let material = new THREE.MeshLambertMaterial({
-      color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? SHARP_TILE_COLOR : TILE_COLOR,
+      color: KEYBOARD_NOTES_MAPPING[k].note.sharp
+        ? SHARP_TILE_COLOR
+        : TILE_COLOR,
       vertexColors: THREE.FaceColors,
     });
-    let tile = new THREE.Mesh(KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometrySharpTile : geometry, material);
+    let tile = new THREE.Mesh(
+      KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometrySharpTile : geometry,
+      material,
+    );
     if (KEYBOARD_NOTES_MAPPING[k].note.sharp) {
       tile.position.set(position + TILE_WIDTH / 2, 0.62, 0.13);
     } else {
@@ -131,9 +148,9 @@ const init = () => {
   group.rotation.set(-0.7, 0, 0);
   scene.add(group);
 
-  const light = new THREE.PointLight(0xffffff, 1.2, 100);
-  light.position.set(CAMERA_X, 0, 2);
-  scene.add(light);
+  const pointlight = new THREE.PointLight(0xffffff, 1.2, 100);
+  pointlight.position.set(CAMERA_X, 0, 2);
+  scene.add(pointlight);
 };
 
 const noteColors = (color, note) => {
@@ -211,6 +228,16 @@ const handleRepetitiveKeyboardEvents = () => {
   renderer.render(scene, camera);
 };
 
+const refreshNotesText = () => {
+  notesWrapper.innerHTML = '';
+
+  for (let k of Object.keys(keyboardEvents)) {
+    if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
+      notesWrapper.innerHTML += `<h3>&nbsp;${KEYBOARD_NOTES_MAPPING[k].note.note}<sup>${KEYBOARD_NOTES_MAPPING[k].note.frequency}</sup>&nbsp;</h3>`;
+    }
+  }
+};
+
 const gameLoop = () => {
   requestAnimationFrame(gameLoop);
 
@@ -223,3 +250,9 @@ init();
 renderer.render(scene, camera);
 
 gameLoop();
+
+// ========== //
+
+window.onload = () => {
+  notesWrapper = document.querySelector('#notes-wrapper');
+};
