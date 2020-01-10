@@ -53,7 +53,7 @@ const init = () => {
     0.01,
     10,
   );
-  camera.position.set(0.15, 0, 1);
+  camera.position.set(0.28, 0, 1);
 
   scene = new THREE.Scene()
 
@@ -112,7 +112,7 @@ const init = () => {
       noteColors(0x000000, note);
       note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
       note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
-      note.position.set(position - TILE_WIDTH, 0.6, 0.1);
+      note.position.set(position, 0.6, 0.1);
 
     }
     KEYBOARD_NOTES_MAPPING[k].tile = note;
