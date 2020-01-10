@@ -194,7 +194,7 @@ const handlePressedKeyboardEvent = k => {
 
   if (!key.note.paused) {
     key.note.pause();
-    key.note.fastSeek(0.0);
+    key.note.currentTime = 0.0;
   }
 
   key.note.play();
