@@ -44,7 +44,7 @@ const DEFAULT_TILE_ROTATION = 0.0;
 const MAX_TILE_ROTATION = 0.1;
 const TILE_ROTATION_STEP = 0.05;
 
-const MAX_SHARP_ROTATION = 0.02;
+const MAX_SHARP_ROTATION = 0.03;
 const SHARP_ROTATION_STEP = 0.01;
 const CAMERA_X = 0.28;
 const TILE_COLOR = 0xffe4c4;
@@ -59,6 +59,7 @@ let notesWrapper;
 // === BUSINESS
 
 let resizeTimeout = null;
+let notesWrapperTimeout = null;
 const keyboardEvents = {};
 
 const init = () => {
@@ -101,7 +102,7 @@ const init = () => {
     event => {
       keyboardEvents[event.key] = false;
 
-      refreshNotesText();
+      if (Object.values(keyboardEvents).some(k => k)) refreshNotesText();
     },
     false,
   );
@@ -231,13 +232,20 @@ const handleRepetitiveKeyboardEvents = () => {
 };
 
 const refreshNotesText = () => {
+  clearTimeout(notesWrapperTimeout);
+
   notesWrapper.innerHTML = '';
+  notesWrapper.style.opacity = '1';
 
   for (let k of Object.keys(keyboardEvents)) {
     if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
       notesWrapper.innerHTML += `<h3>&nbsp;${KEYBOARD_NOTES_MAPPING[k].note.note}<sup>${KEYBOARD_NOTES_MAPPING[k].note.frequency}</sup>&nbsp;</h3>`;
     }
   }
+
+  notesWrapperTimeout = setTimeout(() => {
+    notesWrapper.style.opacity = '0';
+  }, 1000);
 };
 
 const gameLoop = () => {
