@@ -46,5 +46,5 @@ const NOTES = [
   new Note('../media/932-A-sharp.mp3', 'A#⁹³²', 932, true),
   new Note('../media/987-B.mp3', 'B⁹⁸⁷', 987),
   // third octave
-  new Note('../media/1046-C.mp3', 'C¹⁰⁴⁶', 1046),
+  //new Note('../media/1046-C.mp3', 'C¹⁰⁴⁶', 1046),
 ];

@@ -28,7 +28,7 @@ const KEYBOARD_NOTES_MAPPING = {
   v: { note: NOTES[22] },
   b: { note: NOTES[23] },
   // third octave
-  n: { note: NOTES[24] },
+  //n: { note: NOTES[24] },
 };
 
 // === LITE SIZE
@@ -37,6 +37,9 @@ const PIANO_HEIGHT = 1;
 const TILE_WIDTH =
   (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
 const TILE_HEIGHT = 1;
+
+const DEFAULT_TILE_ROTATION = 0.0;
+const MAX_TILE_ROTATION = 0.1;
 
 // === SCENE ELEMENTS
 
@@ -54,7 +57,7 @@ const init = () => {
     0.01,
     10,
   );
-  camera.position.set(0.15, 0, 1);
+  camera.position.set(0.28, 0, 1);
 
   scene = new THREE.Scene();
 
@@ -93,9 +96,9 @@ const init = () => {
 
   //  create notes group
   let group = new THREE.Group();
-  group.position.set(-PIANO_WIDTH / 2, -PIANO_HEIGHT / 2, 0);
+  group.position.set(-PIANO_WIDTH / 2, 0, -PIANO_HEIGHT / 2);
   let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
-  geometry.translate(0, 0, TILE_WIDTH / 1.9);
+  geometry.translate(0, -TILE_HEIGHT / 2, 0);
   // TODO translate la geometry pour modifier le centre de rotation des touches
 
   let position = 0;
@@ -105,19 +108,19 @@ const init = () => {
       color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
       vertexColors: THREE.FaceColors,
     });
-    let note = new THREE.Mesh(geometry, material);
+    let tile = new THREE.Mesh(geometry, material);
     if (KEYBOARD_NOTES_MAPPING[k].note.sharp) {
-      noteColors(0x0000ff, note);
-      note.position.set(position + TILE_WIDTH / 2, 1, 0.13);
+      noteColors(0x0000ff, tile);
+      tile.position.set(position + TILE_WIDTH / 2, 1, 0.13);
     } else {
       position += TILE_WIDTH + 0.01;
-      noteColors(0x000000, note);
-      note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
-      note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
-      note.position.set(position - TILE_WIDTH, 0.6, 0.1);
+      noteColors(0x000000, tile);
+      tile.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
+      tile.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
+      tile.position.set(position, 0.6, 0.1);
     }
-    KEYBOARD_NOTES_MAPPING[k].tile = note;
-    group.add(note);
+    KEYBOARD_NOTES_MAPPING[k].tile = tile;
+    group.add(tile);
   });
 
   group.rotation.set(-0.7, 0, 0);
@@ -171,22 +174,24 @@ const handlePressedKeyboardEvent = k => {
 };
 
 const handleRepetitiveKeyboardEvents = () => {
+  // handling tile rotation on playing
   for (let k of Object.keys(keyboardEvents)) {
     if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < 0.2)
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < MAX_TILE_ROTATION)
         KEYBOARD_NOTES_MAPPING[k].tile.rotation.x += 0.05;
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > 0.2)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = 0.2;
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > MAX_TILE_ROTATION)
+        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = MAX_TILE_ROTATION;
     }
 
     if (!keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > 0)
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > DEFAULT_TILE_ROTATION)
         KEYBOARD_NOTES_MAPPING[k].tile.rotation.x -= 0.05;
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < 0)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = 0;
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < DEFAULT_TILE_ROTATION)
+        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = DEFAULT_TILE_ROTATION;
     }
   }
 
+  // rendering after mesh changes
   renderer.render(scene, camera);
 };
 
