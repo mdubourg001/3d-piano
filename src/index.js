@@ -135,6 +135,24 @@ const updateViewportSize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
+const updateCanvasBackground = () => {
+  let frequencies = [];
+  Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
+    if (keyboardEvents[k])
+      frequencies.push(KEYBOARD_NOTES_MAPPING[k].note.frequency);
+  });
+
+  const frequenciesAvg = arrayAverage(frequencies);
+
+  document.querySelector('canvas').style.backgroundColor =
+    '#' +
+    hexColorFromString(
+      frequenciesAvg.toString(),
+      NOTES[NOTES.length - 1].frequency.toString(),
+      NOTES[0].frequency.toString(),
+    );
+};
+
 const handlePressedKeyboardEvent = k => {
   if (keyboardEvents[k] || !KEYBOARD_NOTES_MAPPING[k]) return;
 
@@ -148,8 +166,7 @@ const handlePressedKeyboardEvent = k => {
 
   key.note.play();
 
-  // updating canvas bg color based on played note
-  document.querySelector('canvas').style.backgroundColor = key.note.color;
+  updateCanvasBackground();
 };
 
 const handleRepetitiveKeyboardEvents = () => {};
