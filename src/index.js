@@ -1,9 +1,11 @@
 // === CONSTANTS
 
+const isAzerty = (navigator.language || navigator.userLanguage) === 'fr';
+
 const KEYBOARD_NOTES_MAPPING = {
   // first octave
-  q: { note: NOTES[0] },
-  w: { note: NOTES[1] },
+  [isAzerty ? 'a' : 'q']: { note: NOTES[0] },
+  [isAzerty ? 'z' : 'w']: { note: NOTES[1] },
   e: { note: NOTES[2] },
   r: { note: NOTES[3] },
   t: { note: NOTES[4] },
@@ -12,7 +14,7 @@ const KEYBOARD_NOTES_MAPPING = {
   i: { note: NOTES[7] },
   o: { note: NOTES[8] },
   p: { note: NOTES[9] },
-  a: { note: NOTES[10] },
+  [isAzerty ? 'q' : 'a']: { note: NOTES[10] },
   s: { note: NOTES[11] },
   // second octave
   d: { note: NOTES[12] },
@@ -22,13 +24,11 @@ const KEYBOARD_NOTES_MAPPING = {
   j: { note: NOTES[16] },
   k: { note: NOTES[17] },
   l: { note: NOTES[18] },
-  z: { note: NOTES[19] },
-  x: { note: NOTES[20] },
-  c: { note: NOTES[21] },
-  v: { note: NOTES[22] },
-  b: { note: NOTES[23] },
-  // third octave
-  //n: { note: NOTES[24] },
+  [isAzerty ? 'm' : 'z']: { note: NOTES[19] },
+  [isAzerty ? 'w' : 'x']: { note: NOTES[20] },
+  [isAzerty ? 'x' : 'c']: { note: NOTES[21] },
+  [isAzerty ? 'c' : 'v']: { note: NOTES[22] },
+  [isAzerty ? 'v' : 'b']: { note: NOTES[23] },
 };
 
 // === LITE SIZE
@@ -239,7 +239,7 @@ const refreshNotesText = () => {
 
   for (let k of Object.keys(keyboardEvents)) {
     if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
-      notesWrapper.innerHTML += `<h3>&nbsp;${KEYBOARD_NOTES_MAPPING[k].note.note}<sup>${KEYBOARD_NOTES_MAPPING[k].note.frequency}</sup>&nbsp;</h3>`;
+      notesWrapper.innerHTML += `<h2>&nbsp;${KEYBOARD_NOTES_MAPPING[k].note.note}<sup>${KEYBOARD_NOTES_MAPPING[k].note.frequency}</sup>&nbsp;</h2>`;
     }
   }
 
