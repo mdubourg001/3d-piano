@@ -40,6 +40,10 @@ const TILE_HEIGHT = 1;
 
 const DEFAULT_TILE_ROTATION = 0.0;
 const MAX_TILE_ROTATION = 0.1;
+const TILE_ROTATION_STEP = 0.05;
+
+const MAX_SHARP_ROTATION = 0.02;
+const SHARP_ROTATION_STEP = 0.01;
 
 // === SCENE ELEMENTS
 
@@ -176,16 +180,23 @@ const handlePressedKeyboardEvent = k => {
 const handleRepetitiveKeyboardEvents = () => {
   // handling tile rotation on playing
   for (let k of Object.keys(keyboardEvents)) {
-    if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < MAX_TILE_ROTATION)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x += 0.05;
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > MAX_TILE_ROTATION)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = MAX_TILE_ROTATION;
-    }
+    if (!KEYBOARD_NOTES_MAPPING[k]) continue;
 
-    if (!keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
+    const maxRot = KEYBOARD_NOTES_MAPPING[k].note.sharp
+      ? MAX_SHARP_ROTATION
+      : MAX_TILE_ROTATION;
+    const rotStep = KEYBOARD_NOTES_MAPPING[k].note.sharp
+      ? SHARP_ROTATION_STEP
+      : TILE_ROTATION_STEP;
+
+    if (keyboardEvents[k]) {
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < maxRot)
+        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x += rotStep;
+      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > maxRot)
+        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = maxRot;
+    } else {
       if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > DEFAULT_TILE_ROTATION)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x -= 0.05;
+        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x -= rotStep;
       if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < DEFAULT_TILE_ROTATION)
         KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = DEFAULT_TILE_ROTATION;
     }
