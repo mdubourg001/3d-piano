@@ -31,6 +31,12 @@ const KEYBOARD_NOTES_MAPPING = {
   n: { note: NOTES[24] },
 };
 
+// === LITE SIZE
+const PIANO_WIDTH = (window.innerWidth * 8/10) / (window.innerWidth/2);
+const PIANO_HEIGHT = 1;
+const TILE_WIDTH = (PIANO_WIDTH) / Object.keys(KEYBOARD_NOTES_MAPPING).length*2;
+const TILE_HEIGHT = 1;
+
 // === SCENE ELEMENTS
 
 let camera, scene, renderer;
@@ -49,7 +55,7 @@ const init = () => {
   );
   camera.position.set(0, 0, 1);
 
-  scene = new THREE.Scene();
+  scene = new THREE.Scene()
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -86,24 +92,41 @@ const init = () => {
 
   //  create notes group
   let group = new THREE.Group();
-  let geometry = new THREE.BoxGeometry(0.1, 0.6, 0.1);
-  let material = new THREE.MeshBasicMaterial({
-    color: 0xffe4c4,
-    vertexColors: THREE.FaceColors,
-  });
-  let position = -1.5;
+  group.position.set(-PIANO_WIDTH /2, -PIANO_HEIGHT/2, 0);
+  let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
 
-  for (let i = 0; i < 11; i++) {
-    let note = new THREE.Mesh(geometry, material);
-    note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
-    note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
-    note.position.set(position, 0.6, 0.1);
+  let position = 0;
+
+  Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
+    let material = new THREE.MeshBasicMaterial({
+      color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
+      vertexColors: THREE.FaceColors,
+    });
+    let note = new THREE.Mesh( geometry, material );
+    if(KEYBOARD_NOTES_MAPPING[k].note.sharp){
+      noteColors(0xffffff, note);
+      note.position.set(position + TILE_WIDTH/2, 1, 0.13);
+    }
+    else{
+      position += TILE_WIDTH+0.01;
+      noteColors(0x000000, note);
+      note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
+      note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
+      note.position.set(position, 0.6, 0.1);
+
+    }
+    KEYBOARD_NOTES_MAPPING[k].tile = note;
     group.add(note);
-    position += 0.12;
-  }
+  });
 
   group.rotation.set(-0.7, 0, 0);
   scene.add(group);
+};
+
+const noteColors = (color, note) => {
+  for(let i=0; i<6; i++){
+    note.geometry.faces[i].color = new THREE.Color(color);
+  }
 };
 
 const updateViewportSize = () => {
