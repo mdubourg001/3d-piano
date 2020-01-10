@@ -31,7 +31,12 @@ const KEYBOARD_NOTES_MAPPING = {
   [isAzerty ? 'v' : 'b']: { note: NOTES[23] },
 };
 
-// === LITE SIZE
+// === RAYCASTER INIT
+
+let raycaster = new THREE.Raycaster();
+let lastTileClicked = null;
+
+// === TILE SIZE
 
 const PIANO_WIDTH = (window.innerWidth * 8) / 10 / (window.innerWidth / 2);
 const PIANO_HEIGHT = 1;
@@ -55,6 +60,10 @@ const TILE_PADDING = 0.006;
 
 let camera, scene, renderer;
 let notesWrapper;
+
+// === GROUP OF TILES
+
+let group = new THREE.Group();
 
 // === BUSINESS
 
@@ -91,6 +100,7 @@ const init = () => {
       document.querySelector('#hint-wrapper').style.opacity = '0';
 
       handlePressedKeyboardEvent(event.key);
+      console.log(event.key);
 
       refreshNotesText();
     },
@@ -113,7 +123,6 @@ const init = () => {
   document.body.appendChild(renderer.domElement);
 
   //  create notes group
-  let group = new THREE.Group();
   group.position.set(-PIANO_WIDTH / 2, 0, -PIANO_HEIGHT / 2);
   let geometry = new THREE.BoxGeometry(TILE_WIDTH, TILE_HEIGHT, 0.1);
   let geometrySharpTile = new THREE.BoxGeometry(
@@ -154,6 +163,9 @@ const init = () => {
   const pointlight = new THREE.PointLight(0xffffff, 1.2, 100);
   pointlight.position.set(CAMERA_X, 0, 2);
   scene.add(pointlight);
+
+  renderer.domElement.addEventListener('mousedown', onMouseDown);
+  renderer.domElement.addEventListener('mouseup', onMouseUp);
 };
 
 const noteColors = (color, note) => {
@@ -189,7 +201,7 @@ const updateCanvasBackground = () => {
 const handlePressedKeyboardEvent = k => {
   if (keyboardEvents[k] || !KEYBOARD_NOTES_MAPPING[k]) return;
 
-  keyboardEvents[event.key] = true;
+  keyboardEvents[k] = true;
   const key = KEYBOARD_NOTES_MAPPING[k];
 
   if (!key.note.paused) {
@@ -230,6 +242,43 @@ const handleRepetitiveKeyboardEvents = () => {
   // rendering after mesh changes
   renderer.render(scene, camera);
 };
+
+function getClosestTile(position) {
+  // update the position
+  raycaster.setFromCamera(position, camera);
+  // Get list of intersections
+  var selected = raycaster.intersectObjects(group.children);
+  if (selected.length) {
+    return selected[0].object;
+  }
+}
+
+function onMouseDown(event) {
+  var position = new THREE.Vector2();
+ 
+  var domRect = renderer.domElement.getBoundingClientRect();
+  position.x = (event.clientX / domRect.width) * 2 - 1 + domRect.left;
+  position.y = - (event.clientY / domRect.height) * 2 + 1 + domRect.top;
+
+  var s = getClosestTile(position);
+  if (s) {
+
+    const index = Object.values(KEYBOARD_NOTES_MAPPING).findIndex(v => v.tile === s);
+    
+    handlePressedKeyboardEvent(Object.keys(KEYBOARD_NOTES_MAPPING)[index]);
+    lastTileClicked = index;
+    
+    refreshNotesText();
+  }
+}
+
+function onMouseUp(event) {
+
+  keyboardEvents[Object.keys(KEYBOARD_NOTES_MAPPING)[lastTileClicked]] = false;
+
+  if (Object.values(keyboardEvents).some(k => k)) refreshNotesText();
+
+}
 
 const refreshNotesText = () => {
   clearTimeout(notesWrapperTimeout);
