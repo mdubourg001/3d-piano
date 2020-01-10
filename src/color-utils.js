@@ -1,8 +1,5 @@
 const MAX_HEX_COLOR = 16777215;
 
-const arrayAverage = array =>
-  array.reduce((acc, cur) => acc + cur) / array.length;
-
 const decimalValueOfString = str => {
   let decValue = '';
   for (let i = 0; i < str.length; i++) {

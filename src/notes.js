@@ -10,7 +10,7 @@ class Note extends Audio {
     super(soundPath);
 
     this.note = note;
-    this.color = color;
+    this.color = `#${hexColorFromString(frequency.toString(), '1046', '261')}`;
     this.frequency = frequency;
     this.sharp = sharp;
   }
