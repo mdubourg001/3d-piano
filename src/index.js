@@ -102,21 +102,21 @@ const init = () => {
       color: KEYBOARD_NOTES_MAPPING[k].note.sharp ? 0x000000 : 0xffe4c4,
       vertexColors: THREE.FaceColors,
     });
-    let note = new THREE.Mesh( geometry, material );
+    let tile = new THREE.Mesh( geometry, material );
     if(KEYBOARD_NOTES_MAPPING[k].note.sharp){
-      noteColors(0x0000ff, note);
-      note.position.set(position + TILE_WIDTH/2, 1, 0.13);
+      noteColors(0x0000ff, tile);
+      tile.position.set(position + TILE_WIDTH/2, 1, 0.13);
     }
     else{
       position += TILE_WIDTH+0.01;
-      noteColors(0x000000, note);
-      note.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
-      note.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
-      note.position.set(position, 0.6, 0.1);
+      noteColors(0x000000, tile);
+      tile.geometry.faces[6].color = new THREE.Color(0xf0f8ff);
+      tile.geometry.faces[7].color = new THREE.Color(0xf0f8ff);
+      tile.position.set(position, 0.6, 0.1);
 
     }
-    KEYBOARD_NOTES_MAPPING[k].tile = note;
-    group.add(note);
+    KEYBOARD_NOTES_MAPPING[k].tile = tile;
+    group.add(tile);
   });
 
   group.rotation.set(-0.7, 0, 0);
