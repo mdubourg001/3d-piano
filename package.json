@@ -10,6 +10,7 @@
     "build": "yarn clean && yarn copy-media && parcel build index.html"
   },
   "dependencies": {
+    "htm": "^2.2.1",
     "preact": "^10.2.1",
     "three": "^0.112.1"
   },

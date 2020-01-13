@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { arrayAverage } from './utils';
 import { NOTES } from './notes';
 import { hexColorFromString } from './color-utils';
+import { initSheet } from './sheet';
 
 // === CONSTANTS
 
@@ -318,4 +319,6 @@ window.onload = () => {
   }, 1000);
 
   notesWrapper = document.querySelector('#notes-wrapper');
+
+  initSheet();
 };

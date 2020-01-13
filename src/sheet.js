@@ -1,4 +1,7 @@
-import { Component } from 'preact';
+import { Component, h, render } from 'preact';
+import htm from 'htm';
+
+const html = htm.bind(h);
 
 // ========== CLASSES ========== //
 
@@ -36,10 +39,24 @@ class SheetNote {
 
 class SheetModal extends Component {}
 
+class SheetApp extends Component {
+  render() {
+    return html`
+      <h1>
+        Hello World!
+        <h1 />
+      </h1>
+    `;
+  }
+}
+
 // ========== BUSINESS ========== //
 
-openModal = () => {};
-
-closeModal = () => {};
-
-window.onload = () => {};
+export const initSheet = () => {
+  render(
+    html`
+      <${SheetApp} />
+    `,
+    document.querySelector('#sheet'),
+  );
+};
