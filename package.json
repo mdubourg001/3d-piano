@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rm -rf dist .cache",
     "copy-media": "mkdir dist/ && mkdir dist/media/ && cp src/media/* dist/media/",
-    "start": "yarn clean && yarn copy-media && parcel index.html"
+    "start": "yarn clean && yarn copy-media && parcel index.html",
+    "build": "yarn clean && yarn copy-media && parcel build index.html"
   },
   "dependencies": {
     "preact": "^10.2.1",
