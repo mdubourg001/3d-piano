@@ -1,3 +1,9 @@
+import * as THREE from 'three';
+
+import { arrayAverage } from './utils';
+import { NOTES } from './notes';
+import { hexColorFromString } from './color-utils';
+
 // === CONSTANTS
 
 const isAzerty = (navigator.language || navigator.userLanguage) === 'fr';
@@ -165,12 +171,6 @@ const init = () => {
 
   renderer.domElement.addEventListener('mousedown', onMouseDown);
   renderer.domElement.addEventListener('mouseup', onMouseUp);
-};
-
-const noteColors = (color, note) => {
-  for (let i = 0; i < 6; i++) {
-    note.geometry.faces[i].color = new THREE.Color(color);
-  }
 };
 
 const updateViewportSize = () => {

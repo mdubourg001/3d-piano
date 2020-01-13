@@ -1,2 +1,2 @@
-const arrayAverage = array =>
+export const arrayAverage = array =>
   array.reduce((acc, cur) => acc + cur) / array.length;

@@ -4,13 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "http-server ."
+    "clean": "rm -rf dist .cache",
+    "copy-media": "mkdir dist/ && mkdir dist/media/ && cp src/media/* dist/media/",
+    "start": "yarn clean && yarn copy-media && parcel index.html"
   },
   "dependencies": {
+    "preact": "^10.2.1",
     "three": "^0.112.1"
   },
   "devDependencies": {
-    "http-server": "^0.12.1",
+    "parcel": "^1.12.4",
     "prettier": "^1.19.1"
   }
 }

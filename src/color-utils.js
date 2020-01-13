@@ -10,7 +10,7 @@ const decimalValueOfString = str => {
 
 const toHex = dec => dec.toString(16);
 
-const hexColorFromString = (strVal, maxVal, minVal = '\0') => {
+export const hexColorFromString = (strVal, maxVal, minVal = '\0') => {
   const minDecimal = decimalValueOfString(minVal);
   const decimalShiftedToZero = decimalValueOfString(strVal) - minDecimal;
   const maxDecimalShiftedToZero = decimalValueOfString(maxVal) - minDecimal;
