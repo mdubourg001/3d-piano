@@ -1,36 +1,3 @@
-// === CONSTANTS
-
-const isAzerty = (navigator.language || navigator.userLanguage) === 'fr';
-
-const KEYBOARD_NOTES_MAPPING = {
-  // first octave
-  [isAzerty ? 'a' : 'q']: { note: NOTES[0] },
-  [isAzerty ? 'z' : 'w']: { note: NOTES[1] },
-  e: { note: NOTES[2] },
-  r: { note: NOTES[3] },
-  t: { note: NOTES[4] },
-  y: { note: NOTES[5] },
-  u: { note: NOTES[6] },
-  i: { note: NOTES[7] },
-  o: { note: NOTES[8] },
-  p: { note: NOTES[9] },
-  [isAzerty ? 'q' : 'a']: { note: NOTES[10] },
-  s: { note: NOTES[11] },
-  // second octave
-  d: { note: NOTES[12] },
-  f: { note: NOTES[13] },
-  g: { note: NOTES[14] },
-  h: { note: NOTES[15] },
-  j: { note: NOTES[16] },
-  k: { note: NOTES[17] },
-  l: { note: NOTES[18] },
-  [isAzerty ? 'm' : 'z']: { note: NOTES[19] },
-  [isAzerty ? 'w' : 'x']: { note: NOTES[20] },
-  [isAzerty ? 'x' : 'c']: { note: NOTES[21] },
-  [isAzerty ? 'c' : 'v']: { note: NOTES[22] },
-  [isAzerty ? 'v' : 'b']: { note: NOTES[23] },
-};
-
 // === RAYCASTER INIT
 
 let raycaster = new THREE.Raycaster();
@@ -40,8 +7,7 @@ let lastTileClicked = null;
 
 const PIANO_WIDTH = (window.innerWidth * 8) / 10 / (window.innerWidth / 2);
 const PIANO_HEIGHT = 1;
-const TILE_WIDTH =
-  (PIANO_WIDTH / Object.keys(KEYBOARD_NOTES_MAPPING).length) * 2;
+const TILE_WIDTH = (PIANO_WIDTH / NOTES.length) * 2;
 const TILE_HEIGHT = 1;
 const BLACK_TILE_HEIGHT = TILE_HEIGHT / 1.7;
 
@@ -58,7 +24,7 @@ const TILE_PADDING = 0.006;
 
 // === SCENE ELEMENTS
 
-let camera, scene, renderer;
+let camera, scene, renderer, fontLoader;
 let notesWrapper;
 
 // === GROUP OF TILES
@@ -81,6 +47,7 @@ const init = () => {
   camera.position.set(CAMERA_X, 0, 1);
 
   scene = new THREE.Scene();
+  fontLoader = new THREE.FontLoader();
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -102,6 +69,8 @@ const init = () => {
       handlePressedKeyboardEvent(event.key);
 
       refreshNotesText();
+
+      event.preventDefault();
     },
     false,
   );
@@ -135,36 +104,58 @@ const init = () => {
 
   let position = 0;
 
-  Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
-    let material = new THREE.MeshLambertMaterial({
-      color: KEYBOARD_NOTES_MAPPING[k].note.sharp
-        ? SHARP_TILE_COLOR
-        : TILE_COLOR,
-      vertexColors: THREE.FaceColors,
-    });
-    let tile = new THREE.Mesh(
-      KEYBOARD_NOTES_MAPPING[k].note.sharp ? geometrySharpTile : geometry,
-      material,
-    );
-    if (KEYBOARD_NOTES_MAPPING[k].note.sharp) {
-      tile.position.set(position + TILE_WIDTH / 2, 0.62, 0.13);
-    } else {
-      position += TILE_WIDTH + TILE_PADDING;
-      tile.position.set(position, 0.6, 0.1);
-    }
-    KEYBOARD_NOTES_MAPPING[k].tile = tile;
-    group.add(tile);
-  });
+  fontLoader.load(
+    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/helvetiker_regular.typeface.json',
+    function(font) {
+      for (const note of NOTES) {
+        const material = new THREE.MeshLambertMaterial({
+          color: note.sharp ? SHARP_TILE_COLOR : TILE_COLOR,
+          vertexColors: THREE.FaceColors,
+        });
+        const tile = new THREE.Mesh(
+          note.sharp ? geometrySharpTile : geometry,
+          material,
+        );
 
-  group.rotation.set(-0.7, 0, 0);
-  scene.add(group);
+        const textGeometry = new THREE.TextGeometry(note.shortcut.slice(0, 2), {
+          font,
+          size: 0.03,
+          height: 0.005,
+        });
+        const textMaterial = new THREE.MeshPhongMaterial({
+          color: note.sharp ? TILE_COLOR : SHARP_TILE_COLOR,
+          specular: 0xffffff,
+        });
+        const text = new THREE.Mesh(textGeometry, textMaterial);
+        text.rotation.x = 0.4;
 
-  const pointlight = new THREE.PointLight(0xffffff, 1.2, 100);
-  pointlight.position.set(CAMERA_X, 0, 2);
-  scene.add(pointlight);
+        if (note.sharp) {
+          text.position.set(position + TILE_WIDTH / 2 - 0.02, 0.1, 0.19);
+          tile.position.set(position + TILE_WIDTH / 2, 0.62, 0.14);
+        } else {
+          position += TILE_WIDTH + TILE_PADDING;
+          text.position.set(position - 0.02, -0.35, 0.16);
+          tile.position.set(position, 0.6, 0.1);
+        }
 
-  renderer.domElement.addEventListener('mousedown', onMouseDown);
-  renderer.domElement.addEventListener('mouseup', onMouseUp);
+        note.tile = tile;
+        note.text = text;
+
+        group.add(text);
+        group.add(tile);
+      }
+
+      group.rotation.set(-0.7, 0, 0);
+      scene.add(group);
+
+      const pointlight = new THREE.PointLight(0xffffff, 1.2, 100);
+      pointlight.position.set(CAMERA_X, 0, 2);
+      scene.add(pointlight);
+
+      renderer.domElement.addEventListener('mousedown', onMouseDown);
+      renderer.domElement.addEventListener('mouseup', onMouseUp);
+    },
+  );
 };
 
 const noteColors = (color, note) => {
@@ -181,9 +172,11 @@ const updateViewportSize = () => {
 
 const updateCanvasBackground = () => {
   let frequencies = [];
-  Object.keys(KEYBOARD_NOTES_MAPPING).forEach(k => {
-    if (keyboardEvents[k])
-      frequencies.push(KEYBOARD_NOTES_MAPPING[k].note.frequency);
+
+  NOTES.forEach(note => {
+    if (keyboardEvents[note.shortcut]) {
+      frequencies.push(note.frequency);
+    }
   });
 
   const frequenciesAvg = arrayAverage(frequencies);
@@ -198,43 +191,40 @@ const updateCanvasBackground = () => {
 };
 
 const handlePressedKeyboardEvent = k => {
-  if (keyboardEvents[k] || !KEYBOARD_NOTES_MAPPING[k]) return;
-
-  keyboardEvents[k] = true;
-  const key = KEYBOARD_NOTES_MAPPING[k];
-
-  if (!key.note.paused) {
-    key.note.pause();
-    key.note.currentTime = 0.0;
+  if (keyboardEvents[k] || !NOTES.some(note => note.shortcut === k)) {
+    return;
   }
 
-  key.note.play();
+  keyboardEvents[k] = true;
+  const note = NOTES.find(note => note.shortcut === k);
 
+  if (!note.paused) {
+    note.pause();
+    note.currentTime = 0.0;
+  }
+
+  note.play();
   updateCanvasBackground();
 };
 
 const handleRepetitiveKeyboardEvents = () => {
   // handling tile rotation on playing
   for (let k of Object.keys(keyboardEvents)) {
-    if (!KEYBOARD_NOTES_MAPPING[k]) continue;
+    const note = NOTES.find(note => note.shortcut === k);
 
-    const maxRot = KEYBOARD_NOTES_MAPPING[k].note.sharp
-      ? MAX_SHARP_ROTATION
-      : MAX_TILE_ROTATION;
-    const rotStep = KEYBOARD_NOTES_MAPPING[k].note.sharp
-      ? SHARP_ROTATION_STEP
-      : TILE_ROTATION_STEP;
+    if (!note) continue;
+
+    const maxRot = note.sharp ? MAX_SHARP_ROTATION : MAX_TILE_ROTATION;
+    const rotStep = note.sharp ? SHARP_ROTATION_STEP : TILE_ROTATION_STEP;
 
     if (keyboardEvents[k]) {
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < maxRot)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x += rotStep;
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > maxRot)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = maxRot;
+      if (note.tile.rotation.x < maxRot) note.tile.rotation.x += rotStep;
+      if (note.tile.rotation.x > maxRot) note.tile.rotation.x = maxRot;
     } else {
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x > DEFAULT_TILE_ROTATION)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x -= rotStep;
-      if (KEYBOARD_NOTES_MAPPING[k].tile.rotation.x < DEFAULT_TILE_ROTATION)
-        KEYBOARD_NOTES_MAPPING[k].tile.rotation.x = DEFAULT_TILE_ROTATION;
+      if (note.tile.rotation.x > DEFAULT_TILE_ROTATION)
+        note.tile.rotation.x -= rotStep;
+      if (note.tile.rotation.x < DEFAULT_TILE_ROTATION)
+        note.tile.rotation.x = DEFAULT_TILE_ROTATION;
     }
   }
 
@@ -261,13 +251,11 @@ function onMouseDown(event) {
 
   document.querySelector('#hint-wrapper').style.opacity = '0';
 
-  const s = getClosestTile(position);
-  if (s) {
-    const index = Object.values(KEYBOARD_NOTES_MAPPING).findIndex(
-      v => v.tile === s,
-    );
+  const tile = getClosestTile(position);
+  if (tile) {
+    const index = NOTES.findIndex(v => v.tile === tile);
 
-    handlePressedKeyboardEvent(Object.keys(KEYBOARD_NOTES_MAPPING)[index]);
+    handlePressedKeyboardEvent(NOTES[index].shortcut);
     lastTileClicked = index;
 
     refreshNotesText();
@@ -275,7 +263,7 @@ function onMouseDown(event) {
 }
 
 function onMouseUp(event) {
-  keyboardEvents[Object.keys(KEYBOARD_NOTES_MAPPING)[lastTileClicked]] = false;
+  keyboardEvents[NOTES.map(note => note.shortcut)[lastTileClicked]] = false;
 
   if (Object.values(keyboardEvents).some(k => k)) refreshNotesText();
 }
@@ -287,8 +275,10 @@ const refreshNotesText = () => {
   notesWrapper.style.opacity = '1';
 
   for (let k of Object.keys(keyboardEvents)) {
-    if (keyboardEvents[k] && KEYBOARD_NOTES_MAPPING[k]) {
-      notesWrapper.innerHTML += `<h2>&nbsp;${KEYBOARD_NOTES_MAPPING[k].note.note}<sup>${KEYBOARD_NOTES_MAPPING[k].note.frequency}</sup>&nbsp;</h2>`;
+    const note = NOTES.find(note => note.shortcut === k);
+
+    if (keyboardEvents[k] && note) {
+      notesWrapper.innerHTML += `<h2>&nbsp;${note.note}<sup>${note.frequency}</sup>&nbsp;</h2>`;
     }
   }
 
